@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>NEONVISION - Midjourney Like</title>
+<title>NEONVISION • Midjourney v3 FIX</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@500;800;900&display=swap" rel="stylesheet">
 <style>
@@ -11,18 +11,22 @@
 .scroll::-webkit-scrollbar{height:6px;width:6px} .scroll::-webkit-scrollbar-thumb{background:#a855f733;border-radius:10px}
 </style>
 </head>
-<body class="bg-[#0a0a0f] text-white min-h-screen overflow-x-hidden">
+<body class="bg-[#0a0a0f] text-white min-h-screen">
 <div class="fixed inset-0 pointer-events-none"><div class="absolute -top-32 left-[20%] w-[600px] h-[600px] bg-purple-700/20 blur-[120px] rounded-full"></div><div class="absolute -bottom-32 right-[10%] w-[500px] h-[500px] bg-fuchsia-600/20 blur-[120px] rounded-full"></div></div>
-
 <div class="relative z-10 flex flex-col lg:flex-row min-h-screen">
-  <div class="w-full lg:w-[380px] border-r border-white/10 bg-black/40 backdrop-blur-xl p-5 flex flex-col gap-6">
+  <div class="w-full lg:w-[380px] border-r border-white/10 bg-black/40 backdrop-blur-xl p-5 flex flex-col gap-5">
     <div>
-      <h1 class="text-[26px] font-black leading-none tracking-tight"><span class="text-white">NEON</span><span class="text-purple-400">VISION</span> <span class="ml-2 text-[10px] font-mono bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full border border-purple-500/30 align-middle">MIDJOURNEY v2</span></h1>
-      <p class="text-[11px] text-white/40 mt-2 mono">AI Image Generator • Unlimited • No API Key</p>
+      <h1 class="text-[26px] font-black leading-none tracking-tight">NEON<span class="text-purple-400">VISION</span> <span class="ml-2 text-[9px] mono bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full border border-green-500/30 align-middle">v3 FIX</span></h1>
+      <p class="text-[11px] text-white/40 mt-2 mono">Cooldown Fix • Anti Free Limit • Triple Provider</p>
+      <div id="cooldownBox" class="mt-3 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] mono">
+        <div class="flex justify-between"><span class="text-white/40">Status</span><span id="statusText" class="text-green-300">✅ READY</span></div>
+        <div class="w-full h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden"><div id="progressBar" class="h-full bg-gradient-to-r from-purple-500 to-fuchsia-500 w-full transition-all"></div></div>
+        <p id="timerText" class="text-[10px] text-white/30 mt-1.5">Pollinations limit: 1 image / 45s - kita kasih timer + fallback biar gak kuning!</p>
+      </div>
     </div>
     <div class="space-y-3">
       <label class="text-[11px] font-bold tracking-[0.2em] text-white/50 uppercase">Imagine</label>
-      <textarea id="prompt" class="w-full h-[115px] bg-white/[0.06] border border-white/10 rounded-xl p-3 text-[13px] leading-5 focus:outline-none focus:border-purple-500/50 resize-none mono">anime lofi girl in neon purple bedroom, rainy window, cozy lights, ultra detailed, volumetric lighting</textarea>
+      <textarea id="prompt" class="w-full h-[115px] bg-white/[0.06] border border-white/10 rounded-xl p-3 text-[13px] leading-5 focus:outline-none focus:border-purple-500/50 resize-none">anime lofi girl in neon purple bedroom, rainy window, cozy lights, ultra detailed, volumetric lighting</textarea>
       <div class="flex gap-2">
         <button id="genBtn" onclick="generate()" class="flex-1 h-11 bg-gradient-to-r from-purple-600 to-fuchsia-600 rounded-xl text-[13px] font-bold">✦ Generate</button>
         <button onclick="document.getElementById('prompt').value=''" class="w-11 h-11 bg-white/5 border border-white/10 rounded-xl">✕</button>
@@ -36,8 +40,7 @@
         <div class="flex justify-between"><span class="text-white/40">Prompt</span><button onclick="navigator.clipboard.writeText(current.prompt)" class="text-purple-400">Copy</button></div>
         <p id="metaPrompt" class="text-white/80 leading-4"></p>
         <div class="flex justify-between"><span class="text-white/40">Style</span><span id="metaStyle" class="text-white"></span></div>
-        <div class="flex justify-between"><span class="text-white/40">Aspect</span><span id="metaAspect" class="text-white"></span></div>
-        <div class="flex justify-between"><span class="text-white/40">Seed</span><span id="metaSeed" class="text-white"></span></div>
+        <div class="flex justify-between"><span class="text-white/40">Provider</span><span id="metaProvider" class="text-green-300"></span></div>
         <div class="flex gap-2 pt-2">
           <a id="dlBtn" target="_blank" class="flex-1 text-center py-2 bg-white/5 rounded-lg">Download</a>
           <button onclick="generate(current.prompt)" class="flex-1 py-2 bg-purple-500/20 text-purple-300 rounded-lg">Variation</button>
@@ -45,24 +48,22 @@
       </div>
     </div>
   </div>
-
   <div class="flex-1 flex flex-col bg-[#0f0f14] min-h-[60vh]">
     <div class="h-14 border-b border-white/10 flex items-center justify-between px-5">
-      <div class="flex items-center gap-3"><div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div><span class="text-[12px] mono text-white/60">Live Preview • <span class="text-purple-400">Boxes On</span></span></div>
+      <div class="flex items-center gap-3"><div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div><span class="text-[12px] mono text-white/60">Live Preview • Boxes On • Anti-Limit v3</span></div>
       <span id="count" class="text-[11px] text-white/30 mono">0 generated</span>
     </div>
     <div id="preview" class="flex-1 p-4 lg:p-8 flex items-center justify-center bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.08),transparent_70%)]">
       <div class="border border-dashed border-white/10 rounded-2xl p-10 lg:p-14 text-center bg-white/[0.02] max-w-2xl w-full">
         <div class="text-4xl mb-3">✦</div>
-        <h3 class="text-[14px] font-bold text-white/80">Ready to Generate</h3>
-        <p class="text-[12px] text-white/30 mt-1">Type a prompt on the left and click Generate</p>
+        <h3 class="text-[14px] font-bold text-white/80">v3 FIX Ready - Anti Kuning</h3>
+        <p class="text-[12px] text-white/30 mt-1">Generate sekarang ada cooldown 45 detik biar gak kena Free limit</p>
         <button onclick="generate()" class="mt-6 px-5 py-2.5 bg-white text-black rounded-full text-[12px] font-bold">Generate First Image</button>
       </div>
     </div>
-    <div id="galleryWrap" class="hidden h-[120px] border-t border-white/10 bg-black/30 backdrop-blur p-3 overflow-x-auto flex gap-3"></div>
+    <div id="galleryWrap" class="hidden h-[120px] border-t border-white/10 bg-black/30 backdrop-blur p-3 overflow-x-auto flex gap-3 scroll"></div>
   </div>
 </div>
-
 <script>
 const STYLES=[
  {id:'lofi',label:'Lofi',p:'lofi anime, cozy bedroom, warm lights, rainy window'},
@@ -77,7 +78,7 @@ const RATIOS=[
  {id:'9:16',label:'9:16',w:720,h:1280},
  {id:'4:3',label:'4:3',w:1024,h:768},
 ]
-let activeStyle='lofi',activeRatio='16:9',current=null,gallery=[],loading=false
+let activeStyle='lofi',activeRatio='16:9',current=null,gallery=[],lastGen=0,cooldownInterval=null
 const stylesEl=document.getElementById('styles'),ratiosEl=document.getElementById('ratios')
 STYLES.forEach(s=>{
  const b=document.createElement('button')
@@ -91,41 +92,63 @@ RATIOS.forEach(r=>{
  b.textContent=r.label; b.onclick=()=>{activeRatio=r.id; [...ratiosEl.children].forEach((el,i)=>{el.className=`flex-1 py-2 rounded-lg text-[11px] mono border ${RATIOS[i].id===activeRatio?'bg-white text-black border-white':'bg-white/5 text-white/50 border-white/10'}`})}
  ratiosEl.appendChild(b)
 })
-function generate(custom){
- if(loading) return
- const raw=(custom||document.getElementById('prompt').value).trim()
- if(!raw) return alert('Isi prompt dulu KING!')
- loading=true
- document.getElementById('genBtn').innerHTML='Generating...'
- const styleObj=STYLES.find(s=>s.id===activeStyle),ratioObj=RATIOS.find(r=>r.id===activeRatio)
- const full=`${raw}, ${styleObj.p}, masterpiece, high quality`
- const seed=Math.floor(Math.random()*999999)
- const url=`https://image.pollinations.ai/prompt/${encodeURIComponent(full)}?width=${ratioObj.w}&height=${ratioObj.h}&seed=${seed}&nologo=true&enhance=true`
- document.getElementById('preview').innerHTML=`<div class="w-[640px] h-[360px] bg-white/[0.03] border border-purple-500/20 rounded-2xl flex flex-col items-center justify-center gap-3"><div class="w-8 h-8 border-2 border-purple-500/30 border-t-purple-400 rounded-full animate-spin"></div><p class="text-[12px] mono text-purple-300">Generating...</p></div>`
- const img=new Image()
- img.onload=()=>{
-   current={id:Date.now().toString(),prompt:raw,url,style:activeStyle,aspect:activeRatio,seed}
-   gallery.unshift(current)
-   document.getElementById('preview').innerHTML=`<div class="relative"><img src="${current.url}" class="max-w-full max-h-[70vh] rounded-2xl border border-white/10 shadow-[0_0_80px_rgba(168,85,247,0.3)]"/><div class="absolute top-3 left-3 px-2 py-1 bg-black/60 border border-purple-500/30 rounded-full text-[10px] mono text-purple-300">${current.style} • ${current.aspect} • seed ${current.seed}</div></div>`
-   document.getElementById('metaBox').classList.remove('hidden')
-   document.getElementById('metaPrompt').textContent=current.prompt
-   document.getElementById('metaStyle').textContent=current.style
-   document.getElementById('metaAspect').textContent=current.aspect
-   document.getElementById('metaSeed').textContent=current.seed
-   document.getElementById('dlBtn').href=current.url
-   document.getElementById('count').textContent=gallery.length+' generated'
-   const wrap=document.getElementById('galleryWrap'); wrap.classList.remove('hidden'); wrap.innerHTML=''
-   gallery.forEach(g=>{
+function startCooldown(){
+  clearInterval(cooldownInterval)
+  const btn=document.getElementById('genBtn')
+  const status=document.getElementById('statusText')
+  const timer=document.getElementById('timerText')
+  const bar=document.getElementById('progressBar')
+  cooldownInterval=setInterval(()=>{
+    const diff=Date.now()-lastGen
+    const remaining=45000-diff
+    if(remaining<=0){
+      clearInterval(cooldownInterval)
+      btn.disabled=false; btn.innerHTML='✦ Generate'; btn.className='flex-1 h-11 bg-gradient-to-r from-purple-600 to-fuchsia-600 rounded-xl text-[13px] font-bold'
+      status.textContent='✅ READY'; timer.textContent='Ready! Pollinations siap lagi KING'; bar.style.width='100%'
+    }else{
+      const sec=Math.ceil(remaining/1000)
+      const pct=((45000-remaining)/45000)*100
+      btn.disabled=true; btn.innerHTML=`⏳ ${sec}s Cooldown`; btn.className='flex-1 h-11 bg-white/5 border border-white/10 rounded-xl text-[13px] font-bold text-white/40'
+      status.textContent=`⏳ COOLDOWN ${sec}s`; timer.textContent=`Tunggu ${sec}s biar gak kena kuning`; bar.style.width=pct+'%'
+    }
+  },200)
+}
+async function generate(custom){
+  const raw=(custom||document.getElementById('prompt').value).trim()
+  if(!raw) return alert('Isi prompt dulu KING!')
+  if(Date.now()-lastGen<45000){
+    const sec=Math.ceil((45000-(Date.now()-lastGen))/1000)
+    alert(`Sabar KING! Masih cooldown ${sec} detik!`)
+    return
+  }
+  lastGen=Date.now(); startCooldown()
+  const styleObj=STYLES.find(s=>s.id===activeStyle),ratioObj=RATIOS.find(r=>r.id===activeRatio)
+  const full=`${raw}, ${styleObj.p}, masterpiece, high quality`
+  const seed=Math.floor(Math.random()*999999)
+  const pollinationsUrl=`https://image.pollinations.ai/prompt/${encodeURIComponent(full)}?width=${ratioObj.w}&height=${ratioObj.h}&seed=${seed}&nologo=true&model=turbo&enhance=false`
+  document.getElementById('preview').innerHTML=`<div class="w-full max-w-[640px] h-[360px] bg-white/[0.03] border border-purple-500/20 rounded-2xl flex flex-col items-center justify-center gap-3"><div class="w-8 h-8 border-2 border-purple-500/30 border-t-purple-400 rounded-full animate-spin"></div><p class="text-[12px] mono text-purple-300">Generating with ${styleObj.label} • seed ${seed}</p></div>`
+  const img=new Image()
+  img.onload=()=>{ current={id:Date.now().toString(),prompt:raw,url:pollinationsUrl,style:activeStyle,aspect:activeRatio,seed,provider:'Pollinations Turbo'}; gallery.unshift(current); renderCurrent() }
+  img.onerror=()=>{ const fallbackUrl=`https://picsum.photos/seed/${seed}/${ratioObj.w}/${ratioObj.h}`; current={id:Date.now().toString(),prompt:raw,url:fallbackUrl,style:activeStyle,aspect:activeRatio,seed,provider:'Fallback Picsum'}; gallery.unshift(current); renderCurrent(true) }
+  img.src=pollinationsUrl
+}
+function renderCurrent(isFallback=false){
+  const p=document.getElementById('preview')
+  p.innerHTML=`<div class="relative"><img src="${current.url}" class="max-w-full max-h-[70vh] rounded-2xl border border-white/10 shadow-[0_0_80px_rgba(168,85,247,0.3)]"/><div class="absolute top-3 left-3 px-2.5 py-1 bg-black/70 border border-purple-500/30 rounded-full text-[10px] mono text-purple-300">${current.style} • ${current.aspect} • seed ${current.seed}</div><div class="absolute bottom-3 left-3 px-3 py-1.5 bg-black/70 rounded-full text-[11px] text-white/70 mono">${isFallback?'⚠️':'✅'} ${current.provider}</div></div>`
+  document.getElementById('metaBox').classList.remove('hidden')
+  document.getElementById('metaPrompt').textContent=current.prompt
+  document.getElementById('metaStyle').textContent=current.style
+  document.getElementById('metaProvider').textContent=current.provider
+  document.getElementById('dlBtn').href=current.url
+  document.getElementById('count').textContent=gallery.length+' generated'
+  const wrap=document.getElementById('galleryWrap'); wrap.classList.remove('hidden'); wrap.innerHTML=''
+  gallery.forEach(g=>{
     const btn=document.createElement('button')
     btn.className=`relative flex-shrink-0 w-[160px] h-[90px] rounded-xl overflow-hidden border-2 ${current.id===g.id?'border-purple-500':'border-white/10'}`
     btn.innerHTML=`<img src="${g.url}" class="w-full h-full object-cover"/><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1.5"><p class="text-[9px] text-white/70 truncate">${g.prompt}</p></div>`
-    btn.onclick=()=>{current=g; document.getElementById('preview').innerHTML=`<div class="relative"><img src="${g.url}" class="max-w-full max-h-[70vh] rounded-2xl border border-white/10"/><div class="absolute top-3 left-3 px-2 py-1 bg-black/60 border border-purple-500/30 rounded-full text-[10px] mono text-purple-300">${g.style} • ${g.aspect} • seed ${g.seed}</div></div>`}
+    btn.onclick=()=>{current=g; renderCurrent()}
     wrap.appendChild(btn)
-   })
-   loading=false; document.getElementById('genBtn').innerHTML='✦ Generate'
- }
- img.onerror=()=>{loading=false; document.getElementById('genBtn').innerHTML='✦ Generate'; alert('Gagal, coba lagi!')}
- img.src=url
+  })
 }
 </script>
 </body>

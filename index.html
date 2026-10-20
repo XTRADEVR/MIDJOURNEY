@@ -1,20 +1,132 @@
-<!doctype html>
-<html lang="en" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NeonVision AI - Visual Intelligence & Object Detector</title>
-    <meta name="description" content="High-efficiency visual analysis and real-time object identification application powered by Gemini." />
-    <meta property="og:title" content="NeonVision AI - Visual Intelligence & Object Detector" />
-    <meta property="og:description" content="High-efficiency visual analysis and real-time object identification application powered by Gemini." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  </head>
-  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-purple-500 selection:text-white font-sans">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NEONVISION - Midjourney Like</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@500;800;900&display=swap" rel="stylesheet">
+<style>
+*{font-family:Inter,sans-serif} .mono{font-family:JetBrains Mono,monospace}
+.scroll::-webkit-scrollbar{height:6px;width:6px} .scroll::-webkit-scrollbar-thumb{background:#a855f733;border-radius:10px}
+</style>
+</head>
+<body class="bg-[#0a0a0f] text-white min-h-screen overflow-x-hidden">
+<div class="fixed inset-0 pointer-events-none"><div class="absolute -top-32 left-[20%] w-[600px] h-[600px] bg-purple-700/20 blur-[120px] rounded-full"></div><div class="absolute -bottom-32 right-[10%] w-[500px] h-[500px] bg-fuchsia-600/20 blur-[120px] rounded-full"></div></div>
+
+<div class="relative z-10 flex flex-col lg:flex-row min-h-screen">
+  <div class="w-full lg:w-[380px] border-r border-white/10 bg-black/40 backdrop-blur-xl p-5 flex flex-col gap-6">
+    <div>
+      <h1 class="text-[26px] font-black leading-none tracking-tight"><span class="text-white">NEON</span><span class="text-purple-400">VISION</span> <span class="ml-2 text-[10px] font-mono bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full border border-purple-500/30 align-middle">MIDJOURNEY v2</span></h1>
+      <p class="text-[11px] text-white/40 mt-2 mono">AI Image Generator • Unlimited • No API Key</p>
+    </div>
+    <div class="space-y-3">
+      <label class="text-[11px] font-bold tracking-[0.2em] text-white/50 uppercase">Imagine</label>
+      <textarea id="prompt" class="w-full h-[115px] bg-white/[0.06] border border-white/10 rounded-xl p-3 text-[13px] leading-5 focus:outline-none focus:border-purple-500/50 resize-none mono">anime lofi girl in neon purple bedroom, rainy window, cozy lights, ultra detailed, volumetric lighting</textarea>
+      <div class="flex gap-2">
+        <button id="genBtn" onclick="generate()" class="flex-1 h-11 bg-gradient-to-r from-purple-600 to-fuchsia-600 rounded-xl text-[13px] font-bold">✦ Generate</button>
+        <button onclick="document.getElementById('prompt').value=''" class="w-11 h-11 bg-white/5 border border-white/10 rounded-xl">✕</button>
+      </div>
+    </div>
+    <div class="space-y-3"><label class="text-[11px] font-bold tracking-[0.2em] text-white/50 uppercase">Style</label><div id="styles" class="flex flex-wrap gap-2"></div></div>
+    <div class="space-y-3"><label class="text-[11px] font-bold tracking-[0.2em] text-white/50 uppercase">Aspect Ratio</label><div id="ratios" class="flex gap-2"></div></div>
+    <div id="metaBox" class="hidden space-y-3 pt-4 border-t border-white/10">
+      <label class="text-[11px] font-bold tracking-[0.2em] text-white/50 uppercase">Metadata</label>
+      <div class="bg-white/[0.03] border border-white/5 rounded-xl p-3 space-y-2 text-[11px] mono">
+        <div class="flex justify-between"><span class="text-white/40">Prompt</span><button onclick="navigator.clipboard.writeText(current.prompt)" class="text-purple-400">Copy</button></div>
+        <p id="metaPrompt" class="text-white/80 leading-4"></p>
+        <div class="flex justify-between"><span class="text-white/40">Style</span><span id="metaStyle" class="text-white"></span></div>
+        <div class="flex justify-between"><span class="text-white/40">Aspect</span><span id="metaAspect" class="text-white"></span></div>
+        <div class="flex justify-between"><span class="text-white/40">Seed</span><span id="metaSeed" class="text-white"></span></div>
+        <div class="flex gap-2 pt-2">
+          <a id="dlBtn" target="_blank" class="flex-1 text-center py-2 bg-white/5 rounded-lg">Download</a>
+          <button onclick="generate(current.prompt)" class="flex-1 py-2 bg-purple-500/20 text-purple-300 rounded-lg">Variation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-1 flex flex-col bg-[#0f0f14] min-h-[60vh]">
+    <div class="h-14 border-b border-white/10 flex items-center justify-between px-5">
+      <div class="flex items-center gap-3"><div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div><span class="text-[12px] mono text-white/60">Live Preview • <span class="text-purple-400">Boxes On</span></span></div>
+      <span id="count" class="text-[11px] text-white/30 mono">0 generated</span>
+    </div>
+    <div id="preview" class="flex-1 p-4 lg:p-8 flex items-center justify-center bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.08),transparent_70%)]">
+      <div class="border border-dashed border-white/10 rounded-2xl p-10 lg:p-14 text-center bg-white/[0.02] max-w-2xl w-full">
+        <div class="text-4xl mb-3">✦</div>
+        <h3 class="text-[14px] font-bold text-white/80">Ready to Generate</h3>
+        <p class="text-[12px] text-white/30 mt-1">Type a prompt on the left and click Generate</p>
+        <button onclick="generate()" class="mt-6 px-5 py-2.5 bg-white text-black rounded-full text-[12px] font-bold">Generate First Image</button>
+      </div>
+    </div>
+    <div id="galleryWrap" class="hidden h-[120px] border-t border-white/10 bg-black/30 backdrop-blur p-3 overflow-x-auto flex gap-3"></div>
+  </div>
+</div>
+
+<script>
+const STYLES=[
+ {id:'lofi',label:'Lofi',p:'lofi anime, cozy bedroom, warm lights, rainy window'},
+ {id:'anime',label:'Anime',p:'anime style, studio ghibli, detailed'},
+ {id:'realistic',label:'Realistic',p:'photorealistic, ultra detailed, 8k, cinematic'},
+ {id:'cyberpunk',label:'Cyberpunk',p:'cyberpunk, neon lights, futuristic city, blade runner'},
+ {id:'ghibli',label:'Ghibli',p:'ghibli style, miyazaki, soft pastel'},
+]
+const RATIOS=[
+ {id:'1:1',label:'1:1',w:1024,h:1024},
+ {id:'16:9',label:'16:9',w:1280,h:720},
+ {id:'9:16',label:'9:16',w:720,h:1280},
+ {id:'4:3',label:'4:3',w:1024,h:768},
+]
+let activeStyle='lofi',activeRatio='16:9',current=null,gallery=[],loading=false
+const stylesEl=document.getElementById('styles'),ratiosEl=document.getElementById('ratios')
+STYLES.forEach(s=>{
+ const b=document.createElement('button')
+ b.className=`px-3 py-1.5 rounded-full text-[11px] font-medium border ${s.id===activeStyle?'bg-purple-500 text-white border-purple-400':'bg-white/5 text-white/60 border-white/10'}`
+ b.textContent=s.label; b.onclick=()=>{activeStyle=s.id; [...stylesEl.children].forEach((el,i)=>{el.className=`px-3 py-1.5 rounded-full text-[11px] font-medium border ${STYLES[i].id===activeStyle?'bg-purple-500 text-white border-purple-400':'bg-white/5 text-white/60 border-white/10'}`})}
+ stylesEl.appendChild(b)
+})
+RATIOS.forEach(r=>{
+ const b=document.createElement('button')
+ b.className=`flex-1 py-2 rounded-lg text-[11px] mono border ${r.id===activeRatio?'bg-white text-black border-white':'bg-white/5 text-white/50 border-white/10'}`
+ b.textContent=r.label; b.onclick=()=>{activeRatio=r.id; [...ratiosEl.children].forEach((el,i)=>{el.className=`flex-1 py-2 rounded-lg text-[11px] mono border ${RATIOS[i].id===activeRatio?'bg-white text-black border-white':'bg-white/5 text-white/50 border-white/10'}`})}
+ ratiosEl.appendChild(b)
+})
+function generate(custom){
+ if(loading) return
+ const raw=(custom||document.getElementById('prompt').value).trim()
+ if(!raw) return alert('Isi prompt dulu KING!')
+ loading=true
+ document.getElementById('genBtn').innerHTML='Generating...'
+ const styleObj=STYLES.find(s=>s.id===activeStyle),ratioObj=RATIOS.find(r=>r.id===activeRatio)
+ const full=`${raw}, ${styleObj.p}, masterpiece, high quality`
+ const seed=Math.floor(Math.random()*999999)
+ const url=`https://image.pollinations.ai/prompt/${encodeURIComponent(full)}?width=${ratioObj.w}&height=${ratioObj.h}&seed=${seed}&nologo=true&enhance=true`
+ document.getElementById('preview').innerHTML=`<div class="w-[640px] h-[360px] bg-white/[0.03] border border-purple-500/20 rounded-2xl flex flex-col items-center justify-center gap-3"><div class="w-8 h-8 border-2 border-purple-500/30 border-t-purple-400 rounded-full animate-spin"></div><p class="text-[12px] mono text-purple-300">Generating...</p></div>`
+ const img=new Image()
+ img.onload=()=>{
+   current={id:Date.now().toString(),prompt:raw,url,style:activeStyle,aspect:activeRatio,seed}
+   gallery.unshift(current)
+   document.getElementById('preview').innerHTML=`<div class="relative"><img src="${current.url}" class="max-w-full max-h-[70vh] rounded-2xl border border-white/10 shadow-[0_0_80px_rgba(168,85,247,0.3)]"/><div class="absolute top-3 left-3 px-2 py-1 bg-black/60 border border-purple-500/30 rounded-full text-[10px] mono text-purple-300">${current.style} • ${current.aspect} • seed ${current.seed}</div></div>`
+   document.getElementById('metaBox').classList.remove('hidden')
+   document.getElementById('metaPrompt').textContent=current.prompt
+   document.getElementById('metaStyle').textContent=current.style
+   document.getElementById('metaAspect').textContent=current.aspect
+   document.getElementById('metaSeed').textContent=current.seed
+   document.getElementById('dlBtn').href=current.url
+   document.getElementById('count').textContent=gallery.length+' generated'
+   const wrap=document.getElementById('galleryWrap'); wrap.classList.remove('hidden'); wrap.innerHTML=''
+   gallery.forEach(g=>{
+    const btn=document.createElement('button')
+    btn.className=`relative flex-shrink-0 w-[160px] h-[90px] rounded-xl overflow-hidden border-2 ${current.id===g.id?'border-purple-500':'border-white/10'}`
+    btn.innerHTML=`<img src="${g.url}" class="w-full h-full object-cover"/><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1.5"><p class="text-[9px] text-white/70 truncate">${g.prompt}</p></div>`
+    btn.onclick=()=>{current=g; document.getElementById('preview').innerHTML=`<div class="relative"><img src="${g.url}" class="max-w-full max-h-[70vh] rounded-2xl border border-white/10"/><div class="absolute top-3 left-3 px-2 py-1 bg-black/60 border border-purple-500/30 rounded-full text-[10px] mono text-purple-300">${g.style} • ${g.aspect} • seed ${g.seed}</div></div>`}
+    wrap.appendChild(btn)
+   })
+   loading=false; document.getElementById('genBtn').innerHTML='✦ Generate'
+ }
+ img.onerror=()=>{loading=false; document.getElementById('genBtn').innerHTML='✦ Generate'; alert('Gagal, coba lagi!')}
+ img.src=url
+}
+</script>
+</body>
+  </html>
